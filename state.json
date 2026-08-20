@@ -1,0 +1,85 @@
+{
+    "quizzes": [
+        {
+            "question": "Python의 창시자는 누구인가요?",
+            "choices": [
+                "Guido van Rossum",
+                "Linus Torvalds",
+                "James Gosling",
+                "Dennis Ritchie"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "Python에서 리스트에 값을 하나 추가할 때 사용하는 메서드는?",
+            "choices": [
+                "add()",
+                "append()",
+                "insert()",
+                "push()"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "다음 중 불리언(bool) 값은 무엇인가요?",
+            "choices": [
+                "0",
+                "'True'",
+                "True",
+                "1"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "문자열 'python'의 길이는 얼마인가요?",
+            "choices": [
+                "5",
+                "6",
+                "7",
+                "8"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "조건에 따라 다른 코드를 실행할 때 사용하는 문법은?",
+            "choices": [
+                "for",
+                "while",
+                "if",
+                "def"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "key와 value 형태로 데이터를 저장하는 자료형은?",
+            "choices": [
+                "list",
+                "tuple",
+                "dict",
+                "set"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "messi back number?",
+            "choices": [
+                "1",
+                "9",
+                "10",
+                "13"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "ronaldo 9 height?",
+            "choices": [
+                "160",
+                "170",
+                "183",
+                "190"
+            ],
+            "answer": 3
+        }
+    ],
+    "best_score": 71
+}
