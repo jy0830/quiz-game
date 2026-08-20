@@ -16,7 +16,7 @@ class Quiz:
 class QuizGame:
     def __init__(self):
         self.quizzes = self.create_default_quizzes()
-        self.best_score = 0
+        self.best_score = None
         self.state_file = "state.json"
 
     def create_default_quizzes(self):
@@ -138,6 +138,16 @@ class QuizGame:
 
         print("\n========================================")
         print(f"🏆 결과: {total_count}문제 중 {correct_count}문제 정답! ({score}점)")
+
+        if self.best_score is None:
+            self.best_score = score
+            print("🎉 첫 번째 점수가 최고 점수로 저장되었습니다!")
+        elif score > self.best_score:
+            self.best_score = score
+            print("🎉 새로운 최고 점수입니다!")
+        else:
+            print(f"📌 현재 최고 점수는 {self.best_score}점입니다.")
+
         print("========================================")
 
     def add_quiz(self):
@@ -177,8 +187,11 @@ class QuizGame:
         print("----------------------------------------")
 
     def show_best_score(self):
-        print(f"🏆 현재 최고 점수: {self.best_score}")
-
+        if self.best_score is None:
+            print("\n📌 아직 퀴즈를 풀지 않았습니다.")
+        else:
+            print(f"\n🏆 현재 최고 점수: {self.best_score}점")
+            
     def load_data(self):
         pass
 
