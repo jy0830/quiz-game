@@ -141,13 +141,40 @@ class QuizGame:
         print("========================================")
 
     def add_quiz(self):
-        print("📌 퀴즈 추가 기능은 아직 구현 전입니다.")
+        print("\n📌 새로운 퀴즈를 추가합니다.")
+
+        question = self.get_non_empty_input("문제를 입력하세요: ")
+        if question is None:
+            return
+
+        choices = []
+        for i in range(1, 5):
+            choice = self.get_non_empty_input(f"선택지 {i}: ")
+            if choice is None:
+                return
+            choices.append(choice)
+
+        answer = self.get_answer_input()
+        if answer is None:
+            return
+
+        new_quiz = Quiz(question, choices, answer)
+        self.quizzes.append(new_quiz)
+
+        print("✅ 퀴즈가 추가되었습니다!")
 
     def list_quizzes(self):
-        print("\n📋 현재 등록된 퀴즈 목록")
+        if not self.quizzes:
+            print("\n⚠️ 등록된 퀴즈가 없습니다.")
+            return
+
+        print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
         print("----------------------------------------")
+
         for index, quiz in enumerate(self.quizzes, start=1):
-            print(f"{index}. {quiz.question}")
+            print(f"[{index}] {quiz.question}")
+
+        print("----------------------------------------")
 
     def show_best_score(self):
         print(f"🏆 현재 최고 점수: {self.best_score}")
@@ -178,6 +205,21 @@ class QuizGame:
                 print("👋 게임을 종료합니다.")
                 break
 
+    def get_non_empty_input(self, prompt):
+        while True:
+            try:
+                user_input = input(prompt).strip()
+
+                if user_input == "":
+                    print("⚠️ 빈 입력입니다. 다시 입력하세요.")
+                    continue
+
+                return user_input
+
+            except (KeyboardInterrupt, EOFError):
+                print("\n⚠️ 입력이 중단되었습니다. 메뉴로 돌아갑니다.")
+                return None
+        
 def main():
     game = QuizGame()
     game.run()
