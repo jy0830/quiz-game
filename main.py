@@ -13,12 +13,11 @@ class Quiz:
     def check_answer(self, user_answer):
         return user_answer == self.answer
 
-
 class QuizGame:
     def __init__(self):
         self.quizzes = self.create_default_quizzes()
         self.best_score = 0
-        self.state_file = "state.json" 
+        self.state_file = "state.json"
 
     def create_default_quizzes(self):
         return [
@@ -87,8 +86,59 @@ class QuizGame:
                 print("\n⚠️ 입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
                 return None
 
+    def get_answer_input(self):
+        while True:
+            try:
+                user_input = input("정답 입력 (1~4): ").strip()
+
+                if user_input == "":
+                    print("⚠️ 빈 입력입니다. 1~4 사이의 숫자를 입력하세요.")
+                    continue
+
+                answer = int(user_input)
+
+                if 1 <= answer <= 4:
+                    return answer
+                else:
+                    print("⚠️ 잘못된 입력입니다. 1~4 사이의 숫자를 입력하세요.")
+
+            except ValueError:
+                print("⚠️ 숫자로 입력해야 합니다. 1~4 사이의 숫자를 입력하세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n⚠️ 입력이 중단되었습니다. 퀴즈를 종료하고 메뉴로 돌아갑니다.")
+                return None
+
     def play_quiz(self):
-        print("📝 퀴즈 풀기 기능은 아직 구현 전입니다.")
+        if not self.quizzes:
+            print("\n⚠️ 등록된 퀴즈가 없습니다.")
+            return
+
+        correct_count = 0
+        total_count = len(self.quizzes)
+
+        print(f"\n📝 퀴즈를 시작합니다! (총 {total_count}문제)")
+
+        for index, quiz in enumerate(self.quizzes, start=1):
+            print(f"\n[문제 {index}]")
+            quiz.display()
+
+            user_answer = self.get_answer_input()
+
+            if user_answer is None:
+                print("📌 퀴즈를 중단하고 메뉴로 돌아갑니다.")
+                return
+
+            if quiz.check_answer(user_answer):
+                print("✅ 정답입니다!")
+                correct_count += 1
+            else:
+                print(f"❌ 오답입니다! 정답은 {quiz.answer}번입니다.")
+
+        score = int((correct_count / total_count) * 100)
+
+        print("\n========================================")
+        print(f"🏆 결과: {total_count}문제 중 {correct_count}문제 정답! ({score}점)")
+        print("========================================")
 
     def add_quiz(self):
         print("📌 퀴즈 추가 기능은 아직 구현 전입니다.")
@@ -127,7 +177,6 @@ class QuizGame:
             elif choice == 5:
                 print("👋 게임을 종료합니다.")
                 break
-
 
 def main():
     game = QuizGame()
