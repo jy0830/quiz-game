@@ -103,8 +103,7 @@ class QuizGame:
             except ValueError:
                 print("⚠️ 숫자로 입력해야 합니다. 1~5 사이의 숫자를 입력하세요.")
             except (KeyboardInterrupt, EOFError):
-                print("\n⚠️ 입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
-                return None
+                raise
 
     def get_answer_input(self):
         while True:
@@ -125,8 +124,7 @@ class QuizGame:
             except ValueError:
                 print("⚠️ 숫자로 입력해야 합니다. 1~4 사이의 숫자를 입력하세요.")
             except (KeyboardInterrupt, EOFError):
-                print("\n⚠️ 입력이 중단되었습니다. 퀴즈를 종료하고 메뉴로 돌아갑니다.")
-                return None
+                raise   
 
     def play_quiz(self):
         if not self.quizzes:
@@ -143,10 +141,6 @@ class QuizGame:
             quiz.display()
 
             user_answer = self.get_answer_input()
-
-            if user_answer is None:
-                print("📌 퀴즈를 중단하고 메뉴로 돌아갑니다.")
-                return
 
             if quiz.check_answer(user_answer):
                 print("✅ 정답입니다!")
@@ -176,19 +170,13 @@ class QuizGame:
         print("\n📌 새로운 퀴즈를 추가합니다.")
 
         question = self.get_non_empty_input("문제를 입력하세요: ")
-        if question is None:
-            return
 
         choices = []
         for i in range(1, 5):
             choice = self.get_non_empty_input(f"선택지 {i}: ")
-            if choice is None:
-                return
             choices.append(choice)
 
         answer = self.get_answer_input()
-        if answer is None:
-            return
 
         new_quiz = Quiz(question, choices, answer)
         self.quizzes.append(new_quiz)
@@ -220,10 +208,7 @@ class QuizGame:
             with open(self.state_file, "r", encoding="utf-8") as file:
                 data = json.load(file)
 
-            quiz_data_list = data["quizzes"]
-            self.quizzes = [Quiz.from_dict(quiz_data) for quiz_data in quiz_data_list]
-            self.best_score = data.get("best_score", None)
-
+            self.quizzes, self.best_score = self.validate_loaded_data(data)
             print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개)")
 
         except FileNotFoundError:
@@ -232,7 +217,7 @@ class QuizGame:
             self.best_score = None
 
         except (json.JSONDecodeError, KeyError, TypeError, ValueError):
-            print("⚠️ 저장 파일이 손상되었습니다. 기본 퀴즈 데이터로 복구합니다.")
+            print("⚠️ 저장 파일이 손상되었거나 형식이 올바르지 않습니다. 기본 퀴즈 데이터로 복구합니다.")
             self.quizzes = self.create_default_quizzes()
             self.best_score = None
             self.save_data()
@@ -256,26 +241,28 @@ class QuizGame:
             print("⚠️ 데이터를 저장하는 중 오류가 발생했습니다.")
 
     def run(self):
-        while True:
-            self.show_menu()
-            choice = self.get_menu_choice()
+        try:
+            while True:
+                self.show_menu()
+                choice = self.get_menu_choice()
 
-            if choice is None:
-                self.save_data()
-                break
+                if choice == 1:
+                    self.play_quiz()
+                elif choice == 2:
+                    self.add_quiz()
+                elif choice == 3:
+                    self.list_quizzes()
+                elif choice == 4:
+                    self.show_best_score()
+                elif choice == 5:
+                    print("👋 게임을 종료합니다.")
+                    break
 
-            if choice == 1:
-                self.play_quiz()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.list_quizzes()
-            elif choice == 4:
-                self.show_best_score()
-            elif choice == 5:
-                self.save_data()
-                print("👋 게임을 종료합니다.")
-                break
+        except (KeyboardInterrupt, EOFError):
+            print("\n⚠️ 입력이 중단되었습니다. 저장 후 안전하게 종료합니다.")
+
+        finally:
+            self.save_data()
 
     def get_non_empty_input(self, prompt):
         while True:
@@ -289,9 +276,29 @@ class QuizGame:
                 return user_input
 
             except (KeyboardInterrupt, EOFError):
-                print("\n⚠️ 입력이 중단되었습니다. 메뉴로 돌아갑니다.")
-                return None
+                raise
 
+    def validate_loaded_data(self, data):
+        if not isinstance(data, dict):
+            raise TypeError("저장 데이터는 딕셔너리여야 합니다.")
+
+        if "quizzes" not in data:
+            raise KeyError("quizzes 키가 없습니다.")
+
+        quiz_data_list = data["quizzes"]
+        if not isinstance(quiz_data_list, list):
+            raise TypeError("quizzes는 리스트여야 합니다.")
+
+        quizzes = [Quiz.from_dict(quiz_data) for quiz_data in quiz_data_list]
+
+        best_score = data.get("best_score", None)
+        if best_score is not None:
+            if not isinstance(best_score, int):
+                raise TypeError("best_score는 정수 또는 None이어야 합니다.")
+            if not (0 <= best_score <= 100):
+                raise ValueError("best_score는 0~100 사이여야 합니다.")
+
+        return quizzes, best_score
 
 def main():
     game = QuizGame()
