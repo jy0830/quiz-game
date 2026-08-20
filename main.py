@@ -18,7 +18,7 @@ class QuizGame:
     def __init__(self):
         self.quizzes = self.create_default_quizzes()
         self.best_score = 0
-        self.state_file = "state.json"
+        self.state_file = "state.json" 
 
     def create_default_quizzes(self):
         return [
