@@ -110,3 +110,6 @@ best_score: 최고 점수 (null 가능)
 ![VSCode Source Control 화면](./docs/screenshots/dev_env.png)
 
 ---
+
+## Clone/Pull 실습
+이 줄은 clone한 저장소에서 추가했습니다.
